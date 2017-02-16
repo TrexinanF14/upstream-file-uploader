@@ -146,6 +146,10 @@ namespace fileuploader
                     {
                         var rowval = ds.Tables[0].Rows[rowindex][kvp.Key]?.ToString();
                         double val;
+                        if (string.IsNullOrEmpty(rowval))
+                        {
+                            continue;
+                        }
                         if (double.TryParse(rowval, out val))
                         {
                             row.Add(kvp.Value, val);
@@ -155,7 +159,15 @@ namespace fileuploader
                             row.Add(kvp.Value, rowval);
                         }
                     }
-                    rows.Add(row);
+
+                    if (row.Count == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        rows.Add(row);
+                    }
                 }
                 return rows;
             }
