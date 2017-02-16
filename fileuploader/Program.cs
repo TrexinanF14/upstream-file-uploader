@@ -41,7 +41,11 @@ namespace fileuploader
             Uri url = null;
             try
             {
-                url = new Uri(GetArgAfter(args, "--webhook"));
+                string urlstr = GetArgAfter(args, "--webhook");
+                if (urlstr != null)
+                {
+                    url = new Uri(urlstr);
+                }
             }
             catch (Exception)
             {
@@ -124,23 +128,26 @@ namespace fileuploader
                 }
 
                 var ds = excelReader.AsDataSet();
-                var headers = ds.Tables[0].Rows[0].ItemArray.Select(x => x?.ToString()).ToArray();
+                var headers = ds.Tables[0].Rows[0].ItemArray
+                    .Select((x, index) => new KeyValuePair<int, string>(index, x?.ToString()))
+                    .Where(x => !string.IsNullOrEmpty(x.Value))
+                    .ToDictionary(x => x.Key, x => x.Value);
 
                 var rows = new List<Dictionary<string, object>>();
-                for (int a = 1; a < ds.Tables[0].Rows.Count; a++)
+                for (int rowindex = 1; rowindex < ds.Tables[0].Rows.Count; rowindex++)
                 {
                     var row = new Dictionary<string, object>();
-                    for (int b = 0; b < headers.Length; b++)
+                    foreach (var kvp in headers)
                     {
-                        var rowval = ds.Tables[0].Rows[a][b]?.ToString();
+                        var rowval = ds.Tables[0].Rows[rowindex][kvp.Key]?.ToString();
                         double val;
                         if (double.TryParse(rowval, out val))
                         {
-                            row.Add(headers[b], val);
+                            row.Add(kvp.Value, val);
                         }
                         else
                         {
-                            row.Add(headers[b], rowval);
+                            row.Add(kvp.Value, rowval);
                         }
                     }
                     rows.Add(row);
