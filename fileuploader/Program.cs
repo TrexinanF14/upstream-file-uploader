@@ -210,7 +210,14 @@ namespace fileuploader
 
                 if (pause == 0)
                 {
-                    await client.PostAsync(url.PathAndQuery, new StringContent(JsonConvert.SerializeObject(rows)));
+                    var content = new StringContent(JsonConvert.SerializeObject(rows));
+                    var response = await client.PostAsync(url.PathAndQuery, content);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("An error occurred during upload: " + await response.Content.ReadAsStringAsync());
+                        Console.Write("Press any key to exit");
+                        Console.ReadLine();
+                    }
                 }
                 else
                 {
