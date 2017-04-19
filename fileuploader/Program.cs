@@ -16,7 +16,7 @@ namespace fileuploader
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to the Current file uploader!");
+            Console.WriteLine("Welcome to the Upstream file uploader!");
             Console.WriteLine("This uploader expects an excel or csv-formatted file, with the first row containing column headers matching the names of the fields for your channel.");
             Console.WriteLine("This can be automated by using the following command line parameters:");
             Console.WriteLine("\"--filename 'filename.csv'\" will set the filename to read.");
